@@ -32,16 +32,14 @@ pipeline {
                 environment {
                     DOCKER_FILE = ".\\${JDK_VERSION}\\${TYPE}\\windows\\windowsservercore-ltsc2019\\Dockerfile.${JDK_TYPE}.releases.full"
                     FULL_JDK_VERSION = getJavaVersion(env.DOCKER_FILE)
-                    TAG_STRING = "-t ${getTags(JDK_VERSION, FULL_JDK_VERSION, TYPE, JDK_TYPE).join(' -t ')}"
                 }
                 steps { 
                   script {
                     publishChecks name: "${JDK_VERSION} / ${JDK_TYPE} / ${TYPE}", title: 'Docker Build', status: "IN_PROGRESS"
                     echo "Do Build for ${PLATFORM} / ${JDK_VERSION} / ${JDK_TYPE} / ${TYPE}"
-                    echo env.TAG_STRING
                   
-                    bat "docker build -f ${env.DOCKER_FILE} ${env.TAG_STRING} c:\\temp\\"
                     infra.withDockerCredentials {
+                      bat "docker build -f ${env.DOCKER_FILE} -t ${getTags(JDK_VERSION, FULL_JDK_VERSION, TYPE, JDK_TYPE).join(' -t ')} c:\\temp\\"
                       getTags(JDK_VERSION, env.FULL_JDK_VERSION, TYPE, JDK_TYPE).each{ tag -> 
                         bat "docker push ${tag}"
                       }
