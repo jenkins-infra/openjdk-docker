@@ -32,16 +32,14 @@ pipeline {
                 environment {
                     DOCKER_FILE = ".\\${JDK_VERSION}\\${TYPE}\\windows\\windowsservercore-ltsc2019\\Dockerfile.${JDK_TYPE}.releases.full"
                     FULL_JDK_VERSION = getJavaVersion(env.DOCKER_FILE)
-                    TAG_STRING = "-t ${getTags(JDK_VERSION, FULL_JDK_VERSION, TYPE, JDK_TYPE).join(' -t ')}"
                 }
                 steps { 
                   script {
                     publishChecks name: "${JDK_VERSION} / ${JDK_TYPE} / ${TYPE}", title: 'Docker Build', status: "IN_PROGRESS"
                     echo "Do Build for ${PLATFORM} / ${JDK_VERSION} / ${JDK_TYPE} / ${TYPE}"
-                    echo env.TAG_STRING
                   
-                    bat "docker build -f ${env.DOCKER_FILE} ${env.TAG_STRING} c:\\temp\\"
                     infra.withDockerCredentials {
+                      bat "docker build -f ${env.DOCKER_FILE} -t ${getTags(JDK_VERSION, FULL_JDK_VERSION, TYPE, JDK_TYPE).join(' -t ')} c:\\temp\\"
                       getTags(JDK_VERSION, env.FULL_JDK_VERSION, TYPE, JDK_TYPE).each{ tag -> 
                         bat "docker push ${tag}"
                       }
@@ -70,24 +68,24 @@ def getJavaVersion(path) {
 
 def getTags(jdkShortVersion, jdkLongVersion, type, jdkType) {
   def tags = []
-  if (BRANCH_NAME == 'master') {
-    tags << "jenkins4eval/openjdk:${jdkShortVersion}-${type}-${jdkType}-windowsservercore-ltsc2019"  
-    tags << "jenkins4eval/openjdk:${jdkLongVersion}-${type}-${jdkType}-windowsservercore-ltsc2019"
+  if (env.BRANCH_NAME == 'master') {
+    tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:${jdkShortVersion}-${type}-${jdkType}-windowsservercore-ltsc2019"  
+    tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:${jdkLongVersion}-${type}-${jdkType}-windowsservercore-ltsc2019"
     if (jdkShortVersion == '15') {
-      tags << "jenkins4eval/openjdk:${type}-${jdkType}-windowsservercore-ltsc2019"
+      tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:${type}-${jdkType}-windowsservercore-ltsc2019"
       if (jdkType == 'hotspot') {
-        tags << "jenkins4eval/openjdk:${type}-windowsservercore-ltsc2019"
+        tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:${type}-windowsservercore-ltsc2019"
         if (type == 'jdk') {
-          tags << "jenkins4eval/openjdk:windowsservercore-ltsc2019"
+          tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:windowsservercore-ltsc2019"
         }
       }  
     }
     if (type == 'jdk') {
-      tags << "jenkins4eval/openjdk:${jdkShortVersion}-${jdkType}-windowsservercore-ltsc2019"
-      tags << "jenkins4eval/openjdk:${jdkLongVersion}-${jdkType}-windowsservercore-ltsc2019"
+      tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:${jdkShortVersion}-${jdkType}-windowsservercore-ltsc2019"
+      tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:${jdkLongVersion}-${jdkType}-windowsservercore-ltsc2019"
     }
   } else {
-    tags << "jenkins4eval/openjdk:${jdkShortVersion}-${type}-${jdkType}-SNAPSHOT"
+    tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:${jdkShortVersion}-${type}-${jdkType}-SNAPSHOT"
   }
   return tags
 }
