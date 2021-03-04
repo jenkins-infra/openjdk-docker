@@ -70,24 +70,25 @@ def getJavaVersion(path) {
 
 def getTags(jdkShortVersion, jdkLongVersion, type, jdkType) {
   def tags = []
-  if (BRANCH_NAME == 'master') {
-    tags << "jenkins4eval/openjdk:${jdkShortVersion}-${type}-${jdkType}-windowsservercore-ltsc2019"  
-    tags << "jenkins4eval/openjdk:${jdkLongVersion}-${type}-${jdkType}-windowsservercore-ltsc2019"
+  def org = "${isTrusted()?'jenkins':'jenkins4eval'}"  
+  if (env.BRANCH_NAME == 'master') {
+    tags << "${org}/openjdk:${jdkShortVersion}-${type}-${jdkType}-windowsservercore-ltsc2019"  
+    tags << "${org}/openjdk:${jdkLongVersion}-${type}-${jdkType}-windowsservercore-ltsc2019"
     if (jdkShortVersion == '15') {
-      tags << "jenkins4eval/openjdk:${type}-${jdkType}-windowsservercore-ltsc2019"
+      tags << "${org}/openjdk:${type}-${jdkType}-windowsservercore-ltsc2019"
       if (jdkType == 'hotspot') {
-        tags << "jenkins4eval/openjdk:${type}-windowsservercore-ltsc2019"
+        tags << "${org}/openjdk:${type}-windowsservercore-ltsc2019"
         if (type == 'jdk') {
-          tags << "jenkins4eval/openjdk:windowsservercore-ltsc2019"
+          tags << "${org}/openjdk:windowsservercore-ltsc2019"
         }
       }  
     }
     if (type == 'jdk') {
-      tags << "jenkins4eval/openjdk:${jdkShortVersion}-${jdkType}-windowsservercore-ltsc2019"
-      tags << "jenkins4eval/openjdk:${jdkLongVersion}-${jdkType}-windowsservercore-ltsc2019"
+      tags << "${org}/openjdk:${jdkShortVersion}-${jdkType}-windowsservercore-ltsc2019"
+      tags << "${org}/openjdk:${jdkLongVersion}-${jdkType}-windowsservercore-ltsc2019"
     }
   } else {
-    tags << "jenkins4eval/openjdk:${jdkShortVersion}-${type}-${jdkType}-SNAPSHOT"
+    tags << "${org}/openjdk:${jdkShortVersion}-${type}-${jdkType}-SNAPSHOT"
   }
   return tags
 }
