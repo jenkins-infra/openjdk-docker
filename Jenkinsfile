@@ -70,25 +70,24 @@ def getJavaVersion(path) {
 
 def getTags(jdkShortVersion, jdkLongVersion, type, jdkType) {
   def tags = []
-  def org = "${isTrusted()?'jenkins':'jenkins4eval'}"  
   if (env.BRANCH_NAME == 'master') {
-    tags << "${org}/openjdk:${jdkShortVersion}-${type}-${jdkType}-windowsservercore-ltsc2019"  
-    tags << "${org}/openjdk:${jdkLongVersion}-${type}-${jdkType}-windowsservercore-ltsc2019"
+    tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:${jdkShortVersion}-${type}-${jdkType}-windowsservercore-ltsc2019"  
+    tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:${jdkLongVersion}-${type}-${jdkType}-windowsservercore-ltsc2019"
     if (jdkShortVersion == '15') {
-      tags << "${org}/openjdk:${type}-${jdkType}-windowsservercore-ltsc2019"
+      tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:${type}-${jdkType}-windowsservercore-ltsc2019"
       if (jdkType == 'hotspot') {
-        tags << "${org}/openjdk:${type}-windowsservercore-ltsc2019"
+        tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:${type}-windowsservercore-ltsc2019"
         if (type == 'jdk') {
-          tags << "${org}/openjdk:windowsservercore-ltsc2019"
+          tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:windowsservercore-ltsc2019"
         }
       }  
     }
     if (type == 'jdk') {
-      tags << "${org}/openjdk:${jdkShortVersion}-${jdkType}-windowsservercore-ltsc2019"
-      tags << "${org}/openjdk:${jdkLongVersion}-${jdkType}-windowsservercore-ltsc2019"
+      tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:${jdkShortVersion}-${jdkType}-windowsservercore-ltsc2019"
+      tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:${jdkLongVersion}-${jdkType}-windowsservercore-ltsc2019"
     }
   } else {
-    tags << "${org}/openjdk:${jdkShortVersion}-${type}-${jdkType}-SNAPSHOT"
+    tags << "${env.DOCKERHUB_ORGANISATION}/openjdk:${jdkShortVersion}-${type}-${jdkType}-SNAPSHOT"
   }
   return tags
 }
